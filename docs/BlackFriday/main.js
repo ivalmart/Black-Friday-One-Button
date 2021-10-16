@@ -71,13 +71,15 @@ options = {
 
 
 let player;
-let listOfItems
-let itemSpawnTick
-let tv_position
-let xbox_position
-let shirt_position
-let engagement_position
-let pants_position
+let shoppingList;
+let listOfItems = ['a', 'b', 'c', 'd', 'e'];
+let shoppingCart;
+let itemSpawnTick;
+let tv_position;
+let xbox_position;
+let shirt_position;
+let engagement_position;
+let pants_position;
 function update() {
   if (!ticks) {
     listOfItems = []
@@ -126,8 +128,26 @@ function update() {
       pants_position.y = player.pos.y
     }
   }
-  
-  
+}
 
 
+function randomizeShoppingList() {
+  for (let i = 0; i < 6; i++) {
+    shoppingList[i] = listOfItems[Math.floor(Math.random() * 5)];
+  }
+}
+
+function scoreList() {
+  for(let i = 0; i < shoppingList.length; i++) {
+    for(let j = 0; j < shoppingCart.length; j++) {
+      if (shoppingList[i] == shoppingCart[j]) {
+        shoppingList[i] = '';
+        shoppingCart[j] = '';
+        score++;
+        // Add time to timer
+        break;
+      }
+    }
+  }
+  randomizeShoppingList();
 }

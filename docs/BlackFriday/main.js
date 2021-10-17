@@ -1,7 +1,8 @@
 title = "Black Friday";
 
 description = `
-Shop Until You Drop
+   Shop Until You Drop\n
+[Press]\tPick-Up/Drop Items
 `;
 
 
@@ -77,8 +78,8 @@ options = {
   isCapturing: true,
   isCapturingGameCanvasOnly: true,
   captureCanvasScale: 2,
-  seed: 1,
-  isPlayingBgm: false,
+  seed: 8,
+  isPlayingBgm: true,
   isReplayEnabled: true,
   isDrawingParticleFront: true,
   theme: "simple"
@@ -111,8 +112,10 @@ function update() {
     engagement_position = vec(170, 170)
     pants_position = vec(170, 40)
     
+    randomizeShoppingList();
   }
   drawWalls();
+  text("Shopping List:", 4, G.HEIGHT - 19);
 
   color("light_cyan")
   let thePlayer = box(player.pos, 10)
@@ -133,11 +136,22 @@ function update() {
   if(input.isJustPressed && thePlayer.isColliding.rect.yellow) {
     // TO DO: IMPLEMENT SCORE AND CHECK LIST SYSTEM HERE
     console.log("Checking Item List at Shopping Area!");
+    scoreList();
+
+    if(shoppingList.length == 0){
+      addScore(100 * score);
+      score = 0;
+      randomizeShoppingList();
+    }
   }
+
+  //for(let i = 0; i < shoppingList.length; i++){
+  //  char(shoppingList[i], 20 * (i + 1), G.HEIGHT - 10);
+  //}
   
-  char("a", 20, G.HEIGHT - 10)
-  char("b", 30, G.HEIGHT - 10)
-  char("d", 40, G.HEIGHT - 10)
+  //char("a", 20, G.HEIGHT - 10)
+  //char("b", 30, G.HEIGHT - 10)
+  //char("d", 40, G.HEIGHT - 10)
   let tv = char("a", tv_position)//TV
   let xbox = char("b", xbox_position); //xbox
   let shirt = char("c", shirt_position); //shirt
@@ -156,6 +170,8 @@ function update() {
      
       G.holdingTv = false
       drop = true
+
+      play("select");
     }
     if(xbox.isColliding.rect.light_cyan && !G.holdingXbox){
       xbox_position.x = player.pos.x + 2
@@ -166,6 +182,8 @@ function update() {
     else if(G.holdingXbox && !drop && !G.holdingTv){
       G.holdingXbox = false
       drop = true
+
+      play("select");
     }
     if(shirt.isColliding.rect.light_cyan && !G.holdingShirt){
       shirt_position.x = player.pos.x
@@ -175,6 +193,8 @@ function update() {
     else if(G.holdingShirt && !drop && !G.holdingTv && !G.holdingXbox){
       G.holdingShirt = false
       drop = true
+
+      play("select");
     }
     if(engagement.isColliding.rect.light_cyan && !G.holdingEngagement){
       engagement_position.x = player.pos.x
@@ -184,6 +204,8 @@ function update() {
     else if(G.holdingEngagement && !drop && !G.holdingTv && !G.holdingXbox && !G.holdingShirt){
       G.holdingEngagement = false
       drop = true
+
+      play("select");
     }
     if(pants.isColliding.rect.light_cyan && !G.holdingPants){
       pants_position.x = player.pos.x - 2
@@ -193,27 +215,51 @@ function update() {
     else if(G.holdingPants && !drop && !G.holdingTv && !G.holdingXbox && !G.holdingShirt && !G.holdingEngagement){
       G.holdingPants = false
       drop = true
+
+      play("select");
+    }
+
+    if(!drop && G.holdingTv || G.holdingXbox || G.holdingEngagement || G.holdingShirt || G.holdingPants){
+      color("green");
+        particle(
+          player.pos.x,
+          player.pos.y,
+          30,
+          3,
+          0,
+          2*PI
+        );
     }
   }
   //drop = false
   if(G.holdingTv){
     tv_position = player.pos
+
+    play("jump");
   }
   if(G.holdingXbox){
     xbox_position.x = player.pos.x + 2
     xbox_position.y = player.pos.y
+
+    play("jump");
   }
   if(G.holdingShirt){
     shirt_position.x = player.pos.x
     shirt_position.y = player.pos.y - 2
+
+    play("jump");
   }
   if(G.holdingEngagement){
     engagement_position.x = player.pos.x
     engagement_position.y = player.pos.y + 2
+
+    play("jump");
   }
   if(G.holdingPants){
     pants_position.x = player.pos.x - 2
     pants_position.y = player.pos.y
+
+    play("jump");
   }
   
 }
@@ -229,7 +275,7 @@ function drawWalls() {
   // UI for item list
   color("red");
   box(G.WIDTH / 2, G.HEIGHT - 3, G.HEIGHT, 40); // bottom border
-  // draws map isle layout
+  // draws map aisle layout
   //
   //  | | |
   //  |   |
@@ -242,12 +288,13 @@ function drawWalls() {
   box(G.WIDTH / 2, G.HEIGHT - 70, 10, 35);    // middle bottom isle
   // draws checkout
   color("yellow");
-  box(G.WIDTH / 2, G.HEIGHT * 0.85, 35, 15);
+  box(G.WIDTH / 2, G.HEIGHT - 33, 50, 20);
 }
 
 function randomizeShoppingList() {
-  for (let i = 0; i < 6; i++) {
-    shoppingList[i] = listOfItems[Math.floor(Math.random() * 5)];
+  shoppingList = [];
+  for (let i = 0; i < 3; i++) {
+    shoppingList.push(listOfItems[Math.floor(Math.random() * 5)]);
   }
 }
 
@@ -266,7 +313,7 @@ function scoreList() {
       }
     }
   }
-  randomizeShoppingList();
+  //randomizeShoppingList();
 }
 
 function priorityDropItem() {

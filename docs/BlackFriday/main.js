@@ -55,7 +55,13 @@ bbbbbb
 // border screen size
 const G = {
   WIDTH: 200,
-  HEIGHT: 200
+  HEIGHT: 200,
+  holdingTv: false,
+  holdingXbox: false,
+  holdingShirt: false,
+  holdingEngagement: false,
+  holdingPants: false,
+
 }
 
 // calculates the game screen including the UI
@@ -126,35 +132,83 @@ function update() {
     // TO DO: IMPLEMENT SCORE AND CHECK LIST SYSTEM HERE
     console.log("Checking Item List at Shopping Area!");
   }
+  
 
-  char("a", tv_position) //TV
-  char("b", xbox_position); //xbox
-  char("c", shirt_position); //shirt
-  char("d", engagement_position); //engagement ring
-  char("e", pants_position); //pants
-  if(input.isPressed){
-    if((input.pos.x > tv_position.x - 4  && input.pos.x < tv_position.x + 4) && (input.pos.y > tv_position.y - 4  && input.pos.y < tv_position.y + 4)){
+  let tv = char("a", tv_position)//TV
+  let xbox = char("b", xbox_position); //xbox
+  let shirt = char("c", shirt_position); //shirt
+  let engagement = char("d", engagement_position); //engagement ring
+  let pants = char("e", pants_position); //pants
+
+  
+  if(input.isJustPressed){
+    if(tv.isColliding.rect.light_cyan && !G.holdingTv){
       tv_position = player.pos
+      G.holdingTv = true
     }
-    if((input.pos.x > xbox_position.x - 4  && input.pos.x < xbox_position.x + 4) && (input.pos.y > xbox_position.y - 4  && input.pos.y < xbox_position.y + 4)){
+    else if(G.holdingTv){
+      G.holdingTv = false
+    }
+    if(xbox.isColliding.rect.light_cyan && !G.holdingXbox){
       xbox_position.x = player.pos.x + 2
       xbox_position.y = player.pos.y
+      G.holdingXbox = true
     }
-    if((input.pos.x > shirt_position.x - 4  && input.pos.x < shirt_position.x + 4) && (input.pos.y > shirt_position.y - 4  && input.pos.y < shirt_position.y + 4)){
+    else if(G.holdingXbox){
+      G.holdingXbox = false
+    }
+    if(shirt.isColliding.rect.light_cyan && !G.holdingShirt){
       shirt_position.x = player.pos.x
       shirt_position.y = player.pos.y - 2
+      G.holdingShirt = true
     }
-    if((input.pos.x > engagement_position.x - 4  && input.pos.x < engagement_position.x + 4) && (input.pos.y > engagement_position.y - 4  && input.pos.y < engagement_position.y + 4)){
+    else if(G.holdingShirt){
+      G.holdingShirt = false
+    }
+    if(engagement.isColliding.rect.light_cyan && !G.holdingEngagement){
       engagement_position.x = player.pos.x
       engagement_position.y = player.pos.y + 2
+      G.holdingEngagement = true
     }
-    if((input.pos.x > pants_position.x - 4  && input.pos.x < pants_position.x + 4) && (input.pos.y > pants_position.y - 4  && input.pos.y < pants_position.y + 4)){
+    else if(G.holdingEngagement){
+      G.holdingEngagement = false
+    }
+    if(pants.isColliding.rect.light_cyan && !G.holdingPants){
       pants_position.x = player.pos.x - 2
       pants_position.y = player.pos.y
+      G.holdingPants = true
+    }
+    else if(G.holdingPants){
+      G.holdingPants = false
     }
   }
+  
+  if(G.holdingTv){
+    tv_position = player.pos
+  }
+  if(G.holdingXbox){
+    xbox_position.x = player.pos.x + 2
+    xbox_position.y = player.pos.y
+  }
+  if(G.holdingShirt){
+    shirt_position.x = player.pos.x
+    shirt_position.y = player.pos.y - 2
+  }
+  if(G.holdingEngagement){
+    engagement_position.x = player.pos.x
+    engagement_position.y = player.pos.y + 2
+  }
+  if(G.holdingPants){
+    pants_position.x = player.pos.x - 2
+    pants_position.y = player.pos.y
+  }
+
+  
+
+  
 
 }
+
 
 // When checking collision against walls, the border will be color("light_blue") and isles will be color("purple")
 function drawWalls() {

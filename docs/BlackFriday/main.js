@@ -122,6 +122,7 @@ function update() {
 
   timer--;
   if(timer <= 0) {
+    play("lucky");
     end();
   }
 
@@ -157,6 +158,7 @@ function update() {
       addScore(250, player.pos.x, player.pos.y - 10);
       timer += (5 * 60) - (difficulty - 1) * 25;
       randomizeShoppingList();
+      play("coin");
     }
   }
 

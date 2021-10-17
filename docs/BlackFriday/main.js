@@ -150,6 +150,7 @@ function update() {
     if(tv.isColliding.rect.light_cyan && !G.holdingTv){
       tv_position = player.pos
       G.holdingTv = true
+      shoppingCart[shoppingCart.length] = tv;
     }
     
     else if(G.holdingTv && !drop){
@@ -161,7 +162,7 @@ function update() {
       xbox_position.x = player.pos.x + 2
       xbox_position.y = player.pos.y
       G.holdingXbox = true
-      shoppingCart.push(xbox)
+      shoppingCart[shoppingCart.length] = xbox;
     }
     else if(G.holdingXbox && !drop && !G.holdingTv){
       G.holdingXbox = false
@@ -171,6 +172,7 @@ function update() {
       shirt_position.x = player.pos.x
       shirt_position.y = player.pos.y - 2
       G.holdingShirt = true
+      shoppingCart[shoppingCart.length] = shirt;
     }
     else if(G.holdingShirt && !drop && !G.holdingTv && !G.holdingXbox){
       G.holdingShirt = false
@@ -180,6 +182,7 @@ function update() {
       engagement_position.x = player.pos.x
       engagement_position.y = player.pos.y + 2
       G.holdingEngagement = true
+      shoppingCart[shoppingCart.length] = engagement;
     }
     else if(G.holdingEngagement && !drop && !G.holdingTv && !G.holdingXbox && !G.holdingShirt){
       G.holdingEngagement = false
@@ -189,6 +192,7 @@ function update() {
       pants_position.x = player.pos.x - 2
       pants_position.y = player.pos.y
       G.holdingPants = true
+      shoppingCart[shoppingCart.length] = pants;
     }
     else if(G.holdingPants && !drop && !G.holdingTv && !G.holdingXbox && !G.holdingShirt && !G.holdingEngagement){
       G.holdingPants = false
@@ -215,6 +219,7 @@ function update() {
     pants_position.x = player.pos.x - 2
     pants_position.y = player.pos.y
   }
+
   
 }
 
@@ -258,8 +263,8 @@ function scoreList() {
     for(let j = 0; j < shoppingCart.length; j++) {
       if (shoppingList[i] == shoppingCart[j]) {
         // checking off list and cart
-        shoppingList[i] = '';
-        shoppingCart[j] = '';
+        shoppingList.splice(i,1);
+        shoppingCart.splice(j, 1);
         score++;
         // Add time to timer
         break;

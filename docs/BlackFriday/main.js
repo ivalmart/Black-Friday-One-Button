@@ -9,12 +9,12 @@ description = `
 characters = [
 //a: tv
  `
-llllll
-lLLLLl
-lLLLLl
-lLLLLl
-lLLLLl
-llllll
+LLLLLL
+LCCCCL
+LCCCCL
+LCCCCL
+LCCCCL
+LLLLLL
  `,
 //b: xbox
  `
@@ -33,7 +33,7 @@ bbbbbb
   bb 
   bb 
  `,
- //d: pants
+ //d: ring
  `
   yy
  LLLL
@@ -41,14 +41,14 @@ bbbbbb
  L  L
  LLLL
  `,
- //e: ring
+ //e: pants
  `
- rrrrr
- rr rr
- rr rr
- rr rr
- rr rr
- rr rr
+ RRRRR
+ RR RR
+ RR RR
+ RR RR
+ RR RR
+ RR RR
  `
 
 ];
@@ -82,7 +82,7 @@ options = {
   isPlayingBgm: true,
   isReplayEnabled: true,
   isDrawingParticleFront: true,
-  theme: "simple"
+  theme: "crt"
 };
 
 
@@ -97,25 +97,33 @@ let shirt_position;
 let engagement_position;
 let pants_position;
 let prev_position;
+let timer;
 
 function update() {
   if (!ticks) {
-    listOfItems = []
+    timer = 30 * 60;
+    shoppingList = []
     shoppingCart = []
     player = {
       pos: vec(G.WIDTH * 0.5, G.HEIGHT * 0.5)
     };
     itemSpawnTick = 0
-    tv_position = vec(100,100)
-    xbox_position = vec(25, 25)
-    shirt_position = vec(130, 130)
-    engagement_position = vec(170, 170)
-    pants_position = vec(170, 40)
+    tv_position = vec(100, 100);
+    xbox_position = vec(25, 25);
+    shirt_position = vec(130, 130);
+    engagement_position = vec(170, 170);
+    pants_position = vec(170, 40);
     
     randomizeShoppingList();
   }
   drawWalls();
   text("Shopping List:", 4, G.HEIGHT - 19);
+  text("TIME: " + Math.floor(timer / 60), 10, 10);
+
+  timer--;
+  if(timer <= 0) {
+    end();
+  }
 
   color("light_cyan")
   let thePlayer = box(player.pos, 10)
@@ -130,97 +138,103 @@ function update() {
   }
   // clamps with the UI
   player.pos.clamp(gameScreen.TOPLEFTX, gameScreen.BOTTOMRIGHTX, gameScreen.TOPLEFTY, gameScreen.BOTTOMRIGHTY);
-  //player.pos.clamp(0, G.WIDTH, 0, G.HEIGHT);
 
-  // checks to see if player is at shopping cart area and they tap to check item list
-  if(input.isJustPressed && thePlayer.isColliding.rect.yellow) {
-    // TO DO: IMPLEMENT SCORE AND CHECK LIST SYSTEM HERE
-    console.log("Checking Item List at Shopping Area!");
-    scoreList();
-
-    if(shoppingList.length == 0){
-      addScore(100 * score);
-      score = 0;
-      randomizeShoppingList();
-    }
+  for(let i = 0; i < shoppingList.length; i++){
+    char(shoppingList[i], 20 * (i + 1), G.HEIGHT - 10);
   }
 
-  //for(let i = 0; i < shoppingList.length; i++){
-  //  char(shoppingList[i], 20 * (i + 1), G.HEIGHT - 10);
-  //}
-  
-  //char("a", 20, G.HEIGHT - 10)
-  //char("b", 30, G.HEIGHT - 10)
-  //char("d", 40, G.HEIGHT - 10)
   let tv = char("a", tv_position)//TV
   let xbox = char("b", xbox_position); //xbox
   let shirt = char("c", shirt_position); //shirt
   let engagement = char("d", engagement_position); //engagement ring
   let pants = char("e", pants_position); //pants
+  let drop = false;
+  // checks to see if player is at shopping cart area and they tap to check item list
+  if(input.isJustPressed && thePlayer.isColliding.rect.yellow) {
+    scoreList();
 
-  let drop = false
-  if(input.isJustPressed){
-    
+    if(shoppingList.length == 0){
+      addScore(250, player.pos.x, player.pos.y - 10);
+      timer += (5 * 60) - (difficulty - 1) * 25;
+      randomizeShoppingList();
+    }
+  }
+
+  if(input.isJustPressed && !thePlayer.isColliding.rect.yellow){
     if(tv.isColliding.rect.light_cyan && !G.holdingTv){
       tv_position = player.pos
       G.holdingTv = true
-      shoppingCart[shoppingCart.length] = tv;
+      shoppingCart.push('a');
+      play("jump");
     }
     
     else if(G.holdingTv && !drop){
-     
       G.holdingTv = false
       drop = true
+      shoppingCart.splice(shoppingCart.indexOf('a'), 1);
 
       play("select");
+      tv_position = vec(100, 100);
     }
     if(xbox.isColliding.rect.light_cyan && !G.holdingXbox){
       xbox_position.x = player.pos.x + 2
       xbox_position.y = player.pos.y
       G.holdingXbox = true
-      shoppingCart[shoppingCart.length] = xbox;
+      shoppingCart.push('b');
+      play("jump");
     }
     else if(G.holdingXbox && !drop && !G.holdingTv){
       G.holdingXbox = false
       drop = true
+      shoppingCart.splice(shoppingCart.indexOf('b'), 1);
 
       play("select");
+      xbox_position = vec(25, 25);
     }
     if(shirt.isColliding.rect.light_cyan && !G.holdingShirt){
       shirt_position.x = player.pos.x
       shirt_position.y = player.pos.y - 2
       G.holdingShirt = true
-      shoppingCart[shoppingCart.length] = shirt;
+      shoppingCart.push('c');
+      play("jump");
     }
     else if(G.holdingShirt && !drop && !G.holdingTv && !G.holdingXbox){
       G.holdingShirt = false
       drop = true
+      shoppingCart.splice(shoppingCart.indexOf('c'), 1);
 
       play("select");
+      shirt_position = vec(130, 130);
     }
     if(engagement.isColliding.rect.light_cyan && !G.holdingEngagement){
       engagement_position.x = player.pos.x
       engagement_position.y = player.pos.y + 2
       G.holdingEngagement = true
-      shoppingCart[shoppingCart.length] = engagement;
+      shoppingCart.push('d');
+      play("jump");
     }
     else if(G.holdingEngagement && !drop && !G.holdingTv && !G.holdingXbox && !G.holdingShirt){
       G.holdingEngagement = false
       drop = true
+      shoppingCart.splice(shoppingCart.indexOf('d'), 1);
 
       play("select");
+      engagement_position = vec(170, 170);
     }
     if(pants.isColliding.rect.light_cyan && !G.holdingPants){
       pants_position.x = player.pos.x - 2
       pants_position.y = player.pos.y
       G.holdingPants = true
-      shoppingCart[shoppingCart.length] = pants;
+      shoppingCart.push('e');
+      play("jump");
     }
     else if(G.holdingPants && !drop && !G.holdingTv && !G.holdingXbox && !G.holdingShirt && !G.holdingEngagement){
       G.holdingPants = false
       drop = true
+      shoppingCart.splice(shoppingCart.indexOf('e'), 1);
 
       play("select");
+      pants_position = vec(170, 40);
     }
 
     if(!drop && G.holdingTv || G.holdingXbox || G.holdingEngagement || G.holdingShirt || G.holdingPants){
@@ -235,38 +249,26 @@ function update() {
         );
     }
   }
-  //drop = false
+
   if(G.holdingTv){
     tv_position = player.pos
-
-    play("jump");
   }
   if(G.holdingXbox){
     xbox_position.x = player.pos.x + 2
     xbox_position.y = player.pos.y
-
-    play("jump");
   }
   if(G.holdingShirt){
     shirt_position.x = player.pos.x
     shirt_position.y = player.pos.y - 2
-
-    play("jump");
   }
   if(G.holdingEngagement){
     engagement_position.x = player.pos.x
     engagement_position.y = player.pos.y + 2
-
-    play("jump");
   }
   if(G.holdingPants){
     pants_position.x = player.pos.x - 2
     pants_position.y = player.pos.y
-
-    play("jump");
   }
-
-  
 }
 
 
@@ -298,9 +300,17 @@ function drawWalls() {
 
 function randomizeShoppingList() {
   shoppingList = [];
+  let usedList = [false, false, false, false, false];
   for (let i = 0; i < 3; i++) {
-    shoppingList.push(listOfItems[Math.floor(Math.random() * 5)]);
+    for(let j = 0; j < usedList.length; j++) {
+      if(!usedList[j]) {
+        shoppingList.push(listOfItems[j]);
+        usedList[j] = true;        
+      }
+    }
   }
+  shuffle(shoppingList);
+  shoppingList.splice(0, 2);
 }
 
 function scoreList() {
@@ -312,13 +322,11 @@ function scoreList() {
         // checking off list and cart
         shoppingList.splice(i,1);
         shoppingCart.splice(j, 1);
-        score++;
-        // Add time to timer
-        break;
+        addScore(100, player.pos);
+        return; 
       }
     }
   }
-  //randomizeShoppingList();
 }
 
 function priorityDropItem() {
@@ -337,4 +345,24 @@ function priorityDropItem() {
   else if(G.holdingPants && input.isJustPressed){
     G.holdingPants = false
   }
+}
+
+// Online Resource Helper Function for Randomizing List
+// Source: https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+function shuffle(array) {
+  let currentIndex = array.length,  randomIndex;
+
+  // While there remain elements to shuffle...
+  while (currentIndex != 0) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // And swap it with the current element.
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
+  }
+
+  return array;
 }

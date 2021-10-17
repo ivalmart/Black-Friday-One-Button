@@ -52,9 +52,18 @@ bbbbbb
 
 ];
 
+// border screen size
 const G = {
   WIDTH: 200,
   HEIGHT: 200
+}
+
+// calculates the game screen including the UI
+const gameScreen = {
+  TOPLEFTX: 12,
+  TOPLEFTY: 12,
+  BOTTOMRIGHTX: G.WIDTH - 12,
+  BOTTOMRIGHTY: G.HEIGHT - 28
 }
 
 options = {	
@@ -80,7 +89,7 @@ let xbox_position;
 let shirt_position;
 let engagement_position;
 let pants_position;
-// let walls;
+let prev_position;
 
 function update() {
   if (!ticks) {
@@ -95,20 +104,34 @@ function update() {
     engagement_position = vec(170, 170)
     pants_position = vec(170, 40)
   }
+  drawWalls();
 
   color("light_cyan")
   let thePlayer = box(player.pos, 10)
   color("black")
 
-  player.pos = vec(input.pos.x, input.pos.y);
-  player.pos.clamp(0, G.WIDTH, 0, G.HEIGHT);
+  // checks to see if there was a wall collision
+  if(thePlayer.isColliding.rect.purple) {
+    player.pos = prev_position;
+  } else {
+    prev_position = player.pos;
+    player.pos = vec(input.pos.x, input.pos.y);
+  }
+  // clamps with the UI
+  player.pos.clamp(gameScreen.TOPLEFTX, gameScreen.BOTTOMRIGHTX, gameScreen.TOPLEFTY, gameScreen.BOTTOMRIGHTY);
+  //player.pos.clamp(0, G.WIDTH, 0, G.HEIGHT);
+
+  // checks to see if player is at shopping cart area and they tap to check item list
+  if(input.isJustPressed && thePlayer.isColliding.rect.yellow) {
+    // TO DO: IMPLEMENT SCORE AND CHECK LIST SYSTEM HERE
+    console.log("Checking Item List at Shopping Area!");
+  }
 
   char("a", tv_position) //TV
   char("b", xbox_position); //xbox
   char("c", shirt_position); //shirt
   char("d", engagement_position); //engagement ring
   char("e", pants_position); //pants
-
   if(input.isPressed){
     if((input.pos.x > tv_position.x - 4  && input.pos.x < tv_position.x + 4) && (input.pos.y > tv_position.y - 4  && input.pos.y < tv_position.y + 4)){
       tv_position = player.pos
@@ -133,44 +156,31 @@ function update() {
 
 }
 
-// // Places the walls into a list to save for the game
-// function spawnWalls() {
-//   // adds the borders to list of walls for coordinates
-//   walls.push(new WallObj(G.WIDTH / 2, 4, G.WIDTH, 7, "border"));
-//   walls.push(new WallObj(G.WIDTH / 2, G.HEIGHT - 3, G.HEIGHT, 7, "border"));
-//   walls.push(new WallObj(4, G.WIDTH / 2, 7, G.HEIGHT, "border"));
-//   walls.push(new WallObj(G.WIDTH - 3, G.WIDTH / 2, 7, G.HEIGHT, "border"));
-//   // adds isle walls to the list for coordinates
-//   walls.push(new WallObj(G.WIDTH / 4, G.HEIGHT / 2, 10, 5, "isle"));
-// }
-
-// // When checking collision against walls, the border will be color("light_blue") and isles will be color("purple")
-// function drawWalls() {
-//   // draws borders of the map
-//   color("light_blue");
-//   box(G.WIDTH / 2, 4, G.WIDTH, 7);
-//   box(G.WIDTH / 2, G.HEIGHT - 3, G.HEIGHT, 7);
-//   box(4, G.WIDTH / 2, 7, G.HEIGHT);
-//   box(G.WIDTH - 3, G.WIDTH / 2, 7, G.HEIGHT);
-//   // draws 3 walls for the map
-//   color("purple");
-//   box(G.WIDTH / 4, G.HEIGHT / 2, 10, 5);
-// }
-
-// class WallObj {
-//   // (x1, y1) has coordinates for top left of box | (x2, y2) has coordinates for bottom right
-//   constructor(x, y, w, h, type) {
-//     this.x1 = x;
-//     this.y1 = y;
-//     this.width = w;
-//     this.height = h;
-//     this.x2 = x + w;
-//     this.y2 = y + h;
-
-//     // can be either border or isle
-//     this.type = type;
-//   }
-// }
+// When checking collision against walls, the border will be color("light_blue") and isles will be color("purple")
+function drawWalls() {
+  // draws borders of the map
+  color("light_blue");
+  box(4, G.WIDTH / 2, 7, G.HEIGHT);   // left border
+  box(G.WIDTH - 3, G.WIDTH / 2, 7, G.HEIGHT); // right border
+  box(G.WIDTH / 2, 4, G.WIDTH, 7);    // top border
+  // UI for item list
+  color("red");
+  box(G.WIDTH / 2, G.HEIGHT - 3, G.HEIGHT, 40); // bottom border
+  // draws map isle layout
+  //
+  //  | | |
+  //  |   |
+  //  | | |
+  //
+  color("purple");
+  box(G.WIDTH / 4, G.HEIGHT / 2 - 15, 10, 100);   // left isle
+  box(G.WIDTH * 0.75, G.HEIGHT / 2 - 15, 10, 100);  // right isle
+  box(G.WIDTH / 2, G.HEIGHT / 4 - 5, 10, 40);   // middle top isle
+  box(G.WIDTH / 2, G.HEIGHT - 70, 10, 35);    // middle bottom isle
+  // draws checkout
+  color("yellow");
+  box(G.WIDTH / 2, G.HEIGHT * 0.85, 35, 15);
+}
 
 function randomizeShoppingList() {
   for (let i = 0; i < 6; i++) {

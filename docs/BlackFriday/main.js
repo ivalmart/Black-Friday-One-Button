@@ -100,6 +100,7 @@ let prev_position;
 function update() {
   if (!ticks) {
     listOfItems = []
+    shoppingCart = []
     player = {
       pos: vec(G.WIDTH * 0.5, G.HEIGHT * 0.5)
     };
@@ -109,6 +110,7 @@ function update() {
     shirt_position = vec(130, 130)
     engagement_position = vec(170, 170)
     pants_position = vec(170, 40)
+    
   }
   drawWalls();
 
@@ -133,56 +135,67 @@ function update() {
     console.log("Checking Item List at Shopping Area!");
   }
   
-
+  char("a", 20, G.HEIGHT - 10)
+  char("b", 30, G.HEIGHT - 10)
+  char("d", 40, G.HEIGHT - 10)
   let tv = char("a", tv_position)//TV
   let xbox = char("b", xbox_position); //xbox
   let shirt = char("c", shirt_position); //shirt
   let engagement = char("d", engagement_position); //engagement ring
   let pants = char("e", pants_position); //pants
 
-  
+  let drop = false
   if(input.isJustPressed){
+    
     if(tv.isColliding.rect.light_cyan && !G.holdingTv){
       tv_position = player.pos
       G.holdingTv = true
     }
-    else if(G.holdingTv){
+    
+    else if(G.holdingTv && !drop){
+     
       G.holdingTv = false
+      drop = true
     }
     if(xbox.isColliding.rect.light_cyan && !G.holdingXbox){
       xbox_position.x = player.pos.x + 2
       xbox_position.y = player.pos.y
       G.holdingXbox = true
+      shoppingCart.push(xbox)
     }
-    else if(G.holdingXbox){
+    else if(G.holdingXbox && !drop && !G.holdingTv){
       G.holdingXbox = false
+      drop = true
     }
     if(shirt.isColliding.rect.light_cyan && !G.holdingShirt){
       shirt_position.x = player.pos.x
       shirt_position.y = player.pos.y - 2
       G.holdingShirt = true
     }
-    else if(G.holdingShirt){
+    else if(G.holdingShirt && !drop && !G.holdingTv && !G.holdingXbox){
       G.holdingShirt = false
+      drop = true
     }
     if(engagement.isColliding.rect.light_cyan && !G.holdingEngagement){
       engagement_position.x = player.pos.x
       engagement_position.y = player.pos.y + 2
       G.holdingEngagement = true
     }
-    else if(G.holdingEngagement){
+    else if(G.holdingEngagement && !drop && !G.holdingTv && !G.holdingXbox && !G.holdingShirt){
       G.holdingEngagement = false
+      drop = true
     }
     if(pants.isColliding.rect.light_cyan && !G.holdingPants){
       pants_position.x = player.pos.x - 2
       pants_position.y = player.pos.y
       G.holdingPants = true
     }
-    else if(G.holdingPants){
+    else if(G.holdingPants && !drop && !G.holdingTv && !G.holdingXbox && !G.holdingShirt && !G.holdingEngagement){
       G.holdingPants = false
+      drop = true
     }
   }
-  
+  //drop = false
   if(G.holdingTv){
     tv_position = player.pos
   }
@@ -202,11 +215,7 @@ function update() {
     pants_position.x = player.pos.x - 2
     pants_position.y = player.pos.y
   }
-
   
-
-  
-
 }
 
 
@@ -258,4 +267,22 @@ function scoreList() {
     }
   }
   randomizeShoppingList();
+}
+
+function priorityDropItem() {
+  if(G.holdingTv && input.isJustPressed){
+    G.holdingTv = false
+  }
+  else if(G.holdingXbox && input.isJustPressed){
+    G.holdingXbox = false
+  }
+  else if(G.holdingShirt && input.isJustPressed){
+    G.holdingShirt = false
+  }
+  else if(G.holdingEngagement && input.isJustPressed){
+    G.holdingEngagement = false
+  }
+  else if(G.holdingPants && input.isJustPressed){
+    G.holdingPants = false
+  }
 }

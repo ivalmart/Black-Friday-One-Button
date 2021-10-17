@@ -80,6 +80,8 @@ let xbox_position;
 let shirt_position;
 let engagement_position;
 let pants_position;
+// let walls;
+
 function update() {
   if (!ticks) {
     listOfItems = []
@@ -93,14 +95,14 @@ function update() {
     engagement_position = vec(170, 170)
     pants_position = vec(170, 40)
   }
-  
-  
 
   color("light_cyan")
   let thePlayer = box(player.pos, 10)
   color("black")
+
   player.pos = vec(input.pos.x, input.pos.y);
   player.pos.clamp(0, G.WIDTH, 0, G.HEIGHT);
+
   char("a", tv_position) //TV
   char("b", xbox_position); //xbox
   char("c", shirt_position); //shirt
@@ -128,8 +130,47 @@ function update() {
       pants_position.y = player.pos.y
     }
   }
+
 }
 
+// // Places the walls into a list to save for the game
+// function spawnWalls() {
+//   // adds the borders to list of walls for coordinates
+//   walls.push(new WallObj(G.WIDTH / 2, 4, G.WIDTH, 7, "border"));
+//   walls.push(new WallObj(G.WIDTH / 2, G.HEIGHT - 3, G.HEIGHT, 7, "border"));
+//   walls.push(new WallObj(4, G.WIDTH / 2, 7, G.HEIGHT, "border"));
+//   walls.push(new WallObj(G.WIDTH - 3, G.WIDTH / 2, 7, G.HEIGHT, "border"));
+//   // adds isle walls to the list for coordinates
+//   walls.push(new WallObj(G.WIDTH / 4, G.HEIGHT / 2, 10, 5, "isle"));
+// }
+
+// // When checking collision against walls, the border will be color("light_blue") and isles will be color("purple")
+// function drawWalls() {
+//   // draws borders of the map
+//   color("light_blue");
+//   box(G.WIDTH / 2, 4, G.WIDTH, 7);
+//   box(G.WIDTH / 2, G.HEIGHT - 3, G.HEIGHT, 7);
+//   box(4, G.WIDTH / 2, 7, G.HEIGHT);
+//   box(G.WIDTH - 3, G.WIDTH / 2, 7, G.HEIGHT);
+//   // draws 3 walls for the map
+//   color("purple");
+//   box(G.WIDTH / 4, G.HEIGHT / 2, 10, 5);
+// }
+
+// class WallObj {
+//   // (x1, y1) has coordinates for top left of box | (x2, y2) has coordinates for bottom right
+//   constructor(x, y, w, h, type) {
+//     this.x1 = x;
+//     this.y1 = y;
+//     this.width = w;
+//     this.height = h;
+//     this.x2 = x + w;
+//     this.y2 = y + h;
+
+//     // can be either border or isle
+//     this.type = type;
+//   }
+// }
 
 function randomizeShoppingList() {
   for (let i = 0; i < 6; i++) {
@@ -139,8 +180,11 @@ function randomizeShoppingList() {
 
 function scoreList() {
   for(let i = 0; i < shoppingList.length; i++) {
+    // list = tv, xbox, tv, pants
+    // cart = ring, shirt, tv
     for(let j = 0; j < shoppingCart.length; j++) {
       if (shoppingList[i] == shoppingCart[j]) {
+        // checking off list and cart
         shoppingList[i] = '';
         shoppingCart[j] = '';
         score++;
